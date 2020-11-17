@@ -62,3 +62,4 @@ class User
         $this->birthday = $birthday;
     }
 }
+
