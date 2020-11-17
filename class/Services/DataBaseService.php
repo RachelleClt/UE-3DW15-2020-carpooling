@@ -106,7 +106,7 @@ class DataBaseService
     }
 
     /**
-     * Créer une annonce.
+     * Create an annonce.
      */
     public function createAnnonce(string $titre, string $lastname, DateTime $jour, string $depart, string $arrive): bool
     {
@@ -127,7 +127,7 @@ class DataBaseService
     }
 
     /**
-     * Return les annonces.
+     * Return all announces.
      */
     public function getAnnonce(): array
     {
@@ -144,7 +144,7 @@ class DataBaseService
     }
 
     /**
-     * Mise a jour des annonces.
+     * Mise a jour des announces.
      */
     public function updateAnnonce(string $id, string $titre, string $lastname, DateTime $jour, string $depart, string $arrive): bool
     {
@@ -166,7 +166,7 @@ class DataBaseService
     }
 
     /**
-     * Delete an annonce.
+     * Delete an announce.
      */
     public function deleteAnnonce(string $id): bool
     {
@@ -184,7 +184,7 @@ class DataBaseService
 
 
     /**
-     * Create an voiture.
+     * Create a car.
      */
     public function createVoiture(string $marque, string $modele, string $couleur, string $proprietaire): bool
     {
@@ -204,7 +204,7 @@ class DataBaseService
     }
 
     /**
-     * Return all users.
+     * Return all cars.
      */
     public function getVoiture(): array
     {
@@ -221,7 +221,7 @@ class DataBaseService
     }
 
     /**
-     * Update an user.
+     * Update a car.
      */
     public function updateVoiture(string $id, string $marque, string $modele, string $couleur, string $proprietaire): bool
     {
@@ -242,7 +242,7 @@ class DataBaseService
     }
 
     /**
-     * Delete an user.
+     * Delete a car.
      */
     public function deleteVoiture(string $id): bool
     {
@@ -259,7 +259,7 @@ class DataBaseService
     }
 
     /**
-     * Create an user.
+     * Create a reservation.
      */
     public function createReservation(string $firstname, string $lastname, string $email, string $lieu_depart, string $lieu_arrivee, DateTime $datereservation): bool
     {
@@ -281,7 +281,7 @@ class DataBaseService
     }
 
     /**
-     * Return all users.
+     * Return all reservations.
      */
     public function getReservation(): array
     {
@@ -298,7 +298,7 @@ class DataBaseService
     }
 
     /**
-     * Update an user.
+     * Update a reservation.
      */
     public function updateReservation(string $id, string $firstname, string $lastname, string $email, string $lieu_depart, string $lieu_arrivee, DateTime $datereservation): bool
     {
@@ -321,7 +321,7 @@ class DataBaseService
     }
 
     /**
-     * Delete an user.
+     * Delete a reservation.
      */
     public function deleteReservation(string $id): bool
     {
@@ -338,7 +338,7 @@ class DataBaseService
     }
 
     /**
-     * Create an commentaire.
+     * Create a comment.
      */
     public function createComment(string $firstname, string $titre, string $commentaire): bool
     {
@@ -357,7 +357,7 @@ class DataBaseService
     }
 
     /**
-     * Return all users.
+     * Return all comments.
      */
     public function getComment(): array
     {
@@ -374,7 +374,7 @@ class DataBaseService
     }
 
     /**
-     * Update an commentaire.
+     * Update a comment.
      */
     public function updateComment(string $id, string $firstname, string $titre, string $commentaire): bool
     {
@@ -394,7 +394,7 @@ class DataBaseService
     }
 
     /**
-     * Delete an user.
+     * Delete a comment.
      */
     public function deleteComment(string $id): bool
     {
