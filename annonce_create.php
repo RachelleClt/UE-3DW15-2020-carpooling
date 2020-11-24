@@ -2,11 +2,15 @@
 
 
 use App\Controllers\AnnonceController;
+use App\Services\UsersService;
 
 require __DIR__ . '/vendor/autoload.php';
 
 $controller = new AnnonceController();
 echo $controller->createAnnonce();
+
+$usersService = new UsersService();
+$users = $usersService->getUser();
 ?>
 
 <p>Création d'une annonce</p>
@@ -26,5 +30,12 @@ echo $controller->createAnnonce();
     <label for="arrive">Lieu d'arrivée :</label>
     <input type="text" name="arrive">
     <br/>
+    <label for="users">Utilisateur(s) :</label>
+    <?php foreach ($users as $user): ?>
+        <?php $userName = $user->getFirstname() . ' ' . $user->getLastname() . ' ' . $user->getEmail(); ?>
+        <input type="checkbox" name="users[]" value="<?php echo $user->getId(); ?>"><?php echo $userName; ?>
+        <br />
+    <?php endforeach; ?>
+    <br />
     <input type="submit" value="Créer une annonce">
 </form>
