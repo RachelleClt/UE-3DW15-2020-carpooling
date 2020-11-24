@@ -120,3 +120,40 @@ INSERT INTO `users_comment` (`user_id`, `comment_id`) VALUES
 (1,3),
 (2, 3),
 (2, 4);
+
+CREATE TABLE annonce_comment (
+	annonce_id INT NOT NULL, 
+	comment_id INT NOT NULL, 
+	PRIMARY KEY(annonce_id, comment_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `annonce_comment` (`annonce_id`, `comment_id`) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+
+CREATE TABLE annonce_voitures (
+	annonce_id INT NOT NULL, 
+	voitures_id INT NOT NULL, 
+	PRIMARY KEY(annonce_id, voiture_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `annonce_voitures` (`annonce_id`, `voitures_id`) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+
+CREATE TABLE annonce_reservation (
+	annonce_id INT NOT NULL, 
+	reservation_id INT NOT NULL, 
+	PRIMARY KEY(annonce_id, reservation_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `annonce_reservation` (`annonce_id`, `reservation_id`) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+
