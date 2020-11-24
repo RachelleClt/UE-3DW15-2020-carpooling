@@ -18,10 +18,11 @@ class AnnonceController
             isset($_POST['lastname']) &&
             isset($_POST['jour']) &&
             isset($_POST['depart']) &&
-            isset($_POST['arrive'])) {
+            isset($_POST['arrive']) &&
+            isset($_POST['users'])) {
             // Create the user :
             $annonceService = new AnnonceService();
-            $isOk = $annonceService->setAnnonce(
+            $annonceId = $annonceService->setAnnonce(
                 null,
                 $_POST['titre'],
                 $_POST['lastname'],
@@ -29,7 +30,14 @@ class AnnonceController
                 $_POST['depart'],
                 $_POST['arrive']
             );
-            if ($isOk) {
+            // Create the user ad relations :
+            $isOk = true;
+            if (!empty($_POST['users'])) {
+                foreach ($_POST['users'] as $userId) {
+                    $isOk = $annonceService->setAnnonceUser($annonceId, $userId);
+                }
+            }
+            if ($annonceId && $isOk) {
                 $html = 'Annonce créé avec succès.';
             } else {
                 $html = 'Erreur lors de la création de l\'annonce.';
@@ -48,24 +56,30 @@ class AnnonceController
 
         // Get all users :
         $annonceService = new AnnonceService();
-        $annonce = $annonceService->getAnnonce();
+        $annonces = $annonceService->getAnnonce();
 
         // Get html :
-        foreach ($annonce as $annonces) {
+        foreach ($annonces as $annonce) {
+            $usersHtml = '';
+            if (!empty($annonce->getUser())) {
+                foreach ($annonce->getUser() as $user) {
+                    $usersHtml .= $user->getFirstname() . ' ' . $user->getLastname() . ' ' . $user->getEmail() . ' ' . $user->getBirthday();
+                }
+            }
             $html .=
-                '#' . $annonces->getId() . ' ' .
-                $annonces->getTitre() . ' ' .
-                $annonces->getLastname() . ' ' .
-                $annonces->getJour()->format('d-m-Y') . ' ' .
-                $annonces->getDepart() . ' ' .
-                $annonces->getArrive() . '<br />';
+                '#' . $annonce->getId() . ' ' .
+                $annonce->getTitre() . ' ' .
+                $annonce->getLastname() . ' ' .
+                $annonce->getJour()->format('d-m-Y') . ' ' .
+                $annonce->getDepart() . ' ' .
+                $annonce->getArrive() . '<br />';
         }
 
         return $html;
     }
 
     /**
-     * Update the user.
+     * Update the ad.
      */
     public function updateAnnonce(): string
     {
@@ -98,7 +112,7 @@ class AnnonceController
     }
 
     /**
-     * Delete an user.
+     * Delete an ad.
      */
     public function deleteAnnonce(): string
     {
@@ -119,4 +133,5 @@ class AnnonceController
         return $html;
     }
 }
+
 

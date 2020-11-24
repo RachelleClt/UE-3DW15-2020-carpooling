@@ -16,17 +16,22 @@ class CommentController
         // If the form have been submitted :
         if (isset($_POST['firstname']) &&
             isset($_POST['titre']) &&
-
             isset($_POST['commentaire'])) {
             // Create the comment :
             $commentService = new CommentService();
-            $isOk = $commentService->setComment(
+            $commentId = $commentService->setComment(
                 null,
                 $_POST['firstname'],
                 $_POST['titre'],
                 $_POST['commentaire']
-                
             );
+            // Create the user comment relations :
+            $isOk = true;
+            if (!empty($_POST['users'])) {
+                foreach ($_POST['users'] as $userId) {
+                    $isOk = $commentService->setCommentUser($commentId, $userId);
+                }
+            }
             if ($isOk) {
                 $html = 'commentaire créé avec succès.';
             } else {
@@ -50,6 +55,12 @@ class CommentController
 
         // Get html :
         foreach ($comment as $comments) {
+            $usersHtml = '';
+            if (!empty($comments->getUser())) {
+                foreach ($comments->getUser() as $user) {
+                    $usersHtml .= $user->getFirstname() . ' ' . $user->getLastname() . ' ' . $user->getEmail() . ' ' . $user->getBirthday();
+                }
+            }
             $html .=
                 '#' . $comments->getId() . ' ' .
                 $comments->getFirstname() . ' ' .

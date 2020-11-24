@@ -22,7 +22,7 @@ class ReservationController
             isset($_POST['datereservation'])) {
             // Create the reservation :
             $reservationService = new ReservationService();
-            $isOk = $reservationService->setReservation(
+            $reservationId = $reservationService->setReservation(
                 null,
                 $_POST['firstname'],
                 $_POST['lastname'],
@@ -31,7 +31,14 @@ class ReservationController
                 $_POST['lieu_arrivee'],
                 $_POST['datereservation']
             );
-            if ($isOk) {
+            // Create the user reservation relations :
+            $isOk = true;
+            if (!empty($_POST['users'])) {
+                foreach ($_POST['users'] as $userId) {
+                    $isOk = $reservationService->setReservationUser($reservationId, $userId);
+                }
+            }
+            if ($reservationId && $isOk) {
                 $html = 'Réservation sauvegardée avec succès.';
             } else {
                 $html = 'Erreur lors de la création de la réservation.';
@@ -54,6 +61,12 @@ class ReservationController
 
         // Get html :
         foreach ($reservation as $reservations) {
+            $usersHtml = '';
+            if (!empty($reservations->getUser())) {
+                foreach ($reservations->getUser() as $user) {
+                    $usersHtml .= $user->getFirstname() . ' ' . $user->getLastname() . ' ' . $user->getEmail() . ' ' . $user->getBirthday();
+                }
+            }
             $html .=
                 '#' . $reservations->getId() . ' ' .
                 $reservations->getFirstname() . ' ' .
