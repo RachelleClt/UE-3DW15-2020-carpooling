@@ -36,6 +36,16 @@ $users = $usersService->getUser();
         <input type="checkbox" name="users[]" value="<?php echo $user->getId(); ?>"><?php echo $userName; ?>
         <br />
     <?php endforeach; ?>
+
+    <label for="voitures">Voiture(s) :</label>
+    <?php foreach ($voitures as $voiture): ?>
+        <?php $voitureName = $voiture->getMarque() . ' ' . $voiture->getModele() . ' ' . $voiture->getCouleur(); ?>
+        <input type="checkbox" name="voitures[]" value="<?php echo $voiture->getId(); ?>"><?php echo $voitureName; ?>
+        <br />
+    <?php endforeach; ?>
+
+
+
     <br />
     <input type="submit" value="Créer une annonce">
 </form>
