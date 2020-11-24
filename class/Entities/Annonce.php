@@ -85,5 +85,18 @@ class Annonce
 
         return $this;
     }
+    public function getVoiture(): ?array
+    {
+        return $this->voitures;
+    }
+
+    public function setVoiture(array $voitures)
+    {
+        $this->voitures = $voitures;
+
+        return $this;
+    }
+
+
 }
 
