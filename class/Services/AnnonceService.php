@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use App\Entities\Annonce;
+
 use DateTime;
 
 class AnnonceService
 {
     /**
-     * Create or update an user.
+     * Create or update an ad.
      */
     public function setAnnonce(?string $id, string $titre, string $lastname, string $jour, string $depart, string $arrive): bool
     {
@@ -17,12 +18,13 @@ class AnnonceService
         $dataBaseService = new DataBaseService();
         $jourDateTime = new DateTime($jour);
         if (empty($id)) {
-            $isOk = $dataBaseService->createAnnonce($titre, $lastname, $jourDateTime, $depart, $arrive);
+            $annonceId = $dataBaseService->createAnnonce($titre, $lastname, $jourDateTime, $depart, $arrive);
         } else {
             $isOk = $dataBaseService->updateAnnonce($id, $titre, $lastname, $jourDateTime, $depart, $arrive);
+            $annonceId = $id;
         }
 
-        return $isOk;
+        return $annonceId;
     }
 
     /**
@@ -30,27 +32,32 @@ class AnnonceService
      */
     public function getAnnonce(): array
     {
-        $annonce = [];
+        $annonces = [];
 
         $dataBaseService = new DataBaseService();
-        $annonceDTO = $dataBaseService->getAnnonce();
-        if (!empty($annonceDTO)) {
-            foreach ($annonceDTO as $annoncesDTO) {
-                $annonces = new Annonce();
-                $annonces->setId($annoncesDTO['id']);
-                $annonces->setTitre($annoncesDTO['titre']);
-                $annonces->setLastname($annoncesDTO['lastname']);
-                $jour = new DateTime($annoncesDTO['jour']);
-                $annonces->setDepart($annoncesDTO['depart']);
-                $annonces->setArrive($annoncesDTO['arrive']);
+        $annoncesDTO = $dataBaseService->getAnnonce();
+        if (!empty($annoncesDTO)) {
+            foreach ($annoncesDTO as $annonceDTO) {
+                $annonce = new Annonce();
+                $annonce->setId($annonceDTO['id']);
+                $annonce->setTitre($annonceDTO['titre']);
+                $annonce->setLastname($annonceDTO['lastname']);
+                $jour = new DateTime($annonceDTO['jour']);
+                $annonce->setDepart($annonceDTO['depart']);
+                $annonce->setArrive($annonceDTO['arrive']);
                 if ($jour !== false) {
-                    $annonces->setJour($jour);
+                    $annonce->setJour($jour);
                 }
-                $annonce[] = $annonces;
+
+                // Get user of this ad :
+                $users = $this->getAnnonceUser($annonceDTO['id']);
+                $annonce->setUser($users);
+
+                $annonces[] = $annonce;
             }
         }
 
-        return $annonce;
+        return $annonces;
     }
 
     /**
@@ -65,5 +72,49 @@ class AnnonceService
 
         return $isOk;
     }
+
+    /**
+     * Create relation bewteen an ad and his user.
+     */
+    public function setAnnonceUser(string $annonceId, string $userId): bool
+    {
+        $isOk = false;
+
+        $dataBaseService = new DataBaseService();
+        $isOk = $dataBaseService->setAnnonceUser($annonceId, $userId);
+
+        return $isOk;
+    }
+
+    /**
+     * Get ad of given user id.
+     */
+    public function getAnnonceUser(string $annonceId): array
+    {
+        $annonceUsers = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation users and annonces :
+        $annoncesUsersDTO = $dataBaseService->getAnnonceUser($annonceId);
+        if (!empty($annoncesUsersDTO)) {
+            foreach ($annoncesUsersDTO as $annoncesUserDTO) {
+                $annonce = new Annonce();
+                $annonce->setId($annoncesUserDTO['id']);
+                $annonce->setTitre($annoncesUserDTO['titre']);
+                $annonce->setLastname($annoncesUserDTO['lastname']);
+                $jour = new DateTime($annoncesUserDTO['jour']);
+                $annonce->setDepart($annoncesUserDTO['depart']);
+                $annonce->setArrive($annoncesUserDTO['arrive']);
+                if ($jour !== false) {
+                    $annonce->setJour($jour);
+                }
+                $annonceUsers[] = $annonce;
+            }
+        }
+
+        return $annonceUsers;
+    }
 }
+
 

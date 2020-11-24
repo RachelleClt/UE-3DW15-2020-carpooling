@@ -33,9 +33,9 @@ class DataBaseService
     /**
      * Create an user.
      */
-    public function createUser(string $firstname, string $lastname, string $email, DateTime $birthday): bool
+    public function createUser(string $firstname, string $lastname, string $email, DateTime $birthday): string
     {
-        $isOk = false;
+        $userId = '';
 
         $data = [
             'firstname' => $firstname,
@@ -46,14 +46,17 @@ class DataBaseService
         $sql = 'INSERT INTO users (firstname, lastname, email, birthday) VALUES (:firstname, :lastname, :email, :birthday)';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
+        if ($isOk) {
+            $userId = $this->connection->lastInsertId();
+        }
 
-        return $isOk;
+        return $userId;
     }
 
     /**
      * Return all users.
      */
-    public function getUsers(): array
+    public function getUser(): array
     {
         $users = [];
 
@@ -103,6 +106,110 @@ class DataBaseService
         $isOk = $query->execute($data);
 
         return $isOk;
+    }
+
+    /**
+     * Return all cars.
+     */
+    public function getCars(): array
+    {
+        $cars = [];
+
+        $sql = 'SELECT * FROM cars';
+        $query = $this->connection->query($sql);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $cars = $results;
+        }
+
+        return $cars;
+    }
+
+    /**
+     * Create relation bewteen an user and his car.
+     */
+    public function setUserCar(string $userId, string $carId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'userId' => $userId,
+            'carId' => $carId,
+        ];
+        $sql = 'INSERT INTO users_cars (user_id, car_id) VALUES (:userId, :carId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get cars of given user id.
+     */
+    public function getUserCars(string $userId): array
+    {
+        $userCars = [];
+
+        $data = [
+            'userId' => $userId,
+        ];
+        $sql = '
+            SELECT c.*
+            FROM cars as c
+            LEFT JOIN users_cars as uc ON uc.car_id = c.id
+            WHERE uc.user_id = :userId';
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $userCars = $results;
+        }
+
+        return $userCars;
+    }
+
+
+    /**
+     * Create relation bewteen an user and his ad.
+     */
+    public function setAnnonceUser(string $annonceId, string $userId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'annonceId' => $annonceId,
+            'userId' => $userId,
+        ];
+        $sql = 'INSERT INTO annonce_user (annonce_id, user_id) VALUES (:annonceId, :userId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get user of given user ad.
+     */
+    public function getAnnonceUser(string $annonceId): array
+    {
+        $AnnonceUser = [];
+
+        $data = [
+            'annonceId' => $annonceId,
+        ];
+        $sql = '
+            SELECT u.*
+            FROM users as u
+            LEFT JOIN annonce_user as au ON au.user_id = u.id
+            WHERE au.annonce_id = :annonceId';
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $AnnonceUser = $results;
+        }
+
+        return $AnnonceUser;
     }
 
     /**
@@ -176,82 +283,6 @@ class DataBaseService
             'id' => $id,
         ];
         $sql = 'DELETE FROM annonces WHERE id = :id;';
-        $query = $this->connection->prepare($sql);
-        $isOk = $query->execute($data);
-
-        return $isOk;
-    }
-
-
-    /**
-     * Create a car.
-     */
-    public function createVoiture(string $marque, string $modele, string $couleur, string $proprietaire): bool
-    {
-        $isOk = false;
-
-        $data = [
-            'marque' => $marque,
-            'modele' => $modele,
-            'couleur' => $couleur,
-            'proprietaire' => $proprietaire,
-        ];
-        $sql = 'INSERT INTO voitures (marque, modele, couleur, proprietaire) VALUES (:marque, :modele, :couleur, :proprietaire)';
-        $query = $this->connection->prepare($sql);
-        $isOk = $query->execute($data);
-
-        return $isOk;
-    }
-
-    /**
-     * Return all cars.
-     */
-    public function getVoiture(): array
-    {
-        $voiture = [];
-
-        $sql = 'SELECT * FROM voitures';
-        $query = $this->connection->query($sql);
-        $results = $query->fetchAll(PDO::FETCH_ASSOC);
-        if (!empty($results)) {
-            $voiture = $results;
-        }
-
-        return $voiture;
-    }
-
-    /**
-     * Update a car.
-     */
-    public function updateVoiture(string $id, string $marque, string $modele, string $couleur, string $proprietaire): bool
-    {
-        $isOk = false;
-
-        $data = [
-            'id' => $id,
-            'marque' => $marque,
-            'modele' => $modele,
-            'couleur' => $couleur,
-            'proprietaire' => $proprietaire,
-        ];
-        $sql = 'UPDATE voitures SET marque = :marque, modele = :modele, couleur = :couleur, proprietaire = :proprietaire WHERE id = :id;';
-        $query = $this->connection->prepare($sql);
-        $isOk = $query->execute($data);
-
-        return $isOk;
-    }
-
-    /**
-     * Delete a car.
-     */
-    public function deleteVoiture(string $id): bool
-    {
-        $isOk = false;
-
-        $data = [
-            'id' => $id,
-        ];
-        $sql = 'DELETE FROM voitures WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -338,6 +369,49 @@ class DataBaseService
     }
 
     /**
+     * Create relation bewteen an user and his reservation.
+     */
+    public function setReservationUser(string $reservationId, string $userId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'reservationId' => $reservationId,
+            'userId' => $userId,
+        ];
+        $sql = 'INSERT INTO reservation_user (reservation_id, user_id) VALUES (:reservationId, :userId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get cars of given user id.
+     */
+    public function getReservationUser(string $reservationId): array
+    {
+        $ReservationUser = [];
+
+        $data = [
+            'reservationId' => $reservationId,
+        ];
+        $sql = '
+            SELECT u.*
+            FROM users as u
+            LEFT JOIN reservation_user as ru ON ru.user_id = u.id
+            WHERE ru.reservation_id = :reservationId';
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $ReservationUser = $results;
+        }
+
+        return $ReservationUser;
+    }
+
+    /**
      * Create a comment.
      */
     public function createComment(string $firstname, string $titre, string $commentaire): bool
@@ -349,7 +423,7 @@ class DataBaseService
             'titre' => $titre,
             'commentaire' => $commentaire,
         ];
-        $sql = 'INSERT INTO commentaire (firstname, titre, commentaire) VALUES (:firstname, :titre, :commentaire)';
+        $sql = 'INSERT INTO comment (firstname, titre, commentaire) VALUES (:firstname, :titre, :commentaire)';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -363,7 +437,7 @@ class DataBaseService
     {
         $users = [];
 
-        $sql = 'SELECT * FROM commentaire';
+        $sql = 'SELECT * FROM comment';
         $query = $this->connection->query($sql);
         $results = $query->fetchAll(PDO::FETCH_ASSOC);
         if (!empty($results)) {
@@ -386,7 +460,7 @@ class DataBaseService
             'titre' => $titre,
             'commentaire' => $commentaire,
         ];
-        $sql = 'UPDATE commentaire SET firstname = :firstname, titre = :titre, commentaire = :commentaire WHERE id = :id;';
+        $sql = 'UPDATE comment SET firstname = :firstname, titre = :titre, commentaire = :commentaire WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
@@ -403,12 +477,57 @@ class DataBaseService
         $data = [
             'id' => $id,
         ];
-        $sql = 'DELETE FROM commentaire WHERE id = :id;';
+        $sql = 'DELETE FROM comment WHERE id = :id;';
         $query = $this->connection->prepare($sql);
         $isOk = $query->execute($data);
 
         return $isOk;
     }
+
+    /**
+     * Create relation bewteen a comment and his user.
+     */
+    public function setCommentUser(string $commentId, string $userId): bool
+    {
+        $isOk = false;
+
+        $data = [
+            'commentId' => $commentId,
+            'userId' => $userId,
+        ];
+        $sql = 'INSERT INTO comment_user (comment_id, user_id) VALUES (:commentId, :userId)';
+        $query = $this->connection->prepare($sql);
+        $isOk = $query->execute($data);
+
+        return $isOk;
+    }
+
+    /**
+     * Get user of given user comment.
+     */
+    public function getCommentUser(string $commentId): array
+    {
+        $CommentUser = [];
+
+        $data = [
+            'commentId' => $commentId,
+        ];
+        $sql = '
+            SELECT u.*
+            FROM users as u
+            LEFT JOIN comment_user as cu ON cu.user_id = u.id
+            WHERE cu.comment_id = :commentId';
+        $query = $this->connection->prepare($sql);
+        $query->execute($data);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($results)) {
+            $CommentUser = $results;
+        }
+
+        return $CommentUser;
+    }
+
+
 
 
 

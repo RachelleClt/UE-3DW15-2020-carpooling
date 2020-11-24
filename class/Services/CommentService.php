@@ -16,12 +16,13 @@ class CommentService
 
         $dataBaseService = new DataBaseService();
         if (empty($id)) {
-            $isOk = $dataBaseService->createComment($firstname, $titre, $commentaire);
+            $commentId = $dataBaseService->createComment($firstname, $titre, $commentaire);
         } else {
             $isOk = $dataBaseService->updateComment($id, $firstname, $titre, $commentaire);
+            $commentId = $id;
         }
 
-        return $isOk;
+        return $commentId;
     }
 
     /**
@@ -40,6 +41,10 @@ class CommentService
                 $comments->setFirstname($commentsDTO['firstname']);
                 $comments->setTitre($commentsDTO['titre']);
                 $comments->setCommentaire($commentsDTO['commentaire']);
+
+                // Get user of this comment :
+                $users = $this->getAnnonceUser($commentsDTO['id']);
+                $comments->setUser($users);
 
                 $comment[] = $comments;
             }
@@ -60,4 +65,46 @@ class CommentService
 
         return $isOk;
     }
+
+    /**
+     * Create relation bewteen an user and his car.
+     */
+    public function setCommentUser(string $userId, string $commentId): bool
+    {
+        $isOk = false;
+
+        $dataBaseService = new DataBaseService();
+        $isOk = $dataBaseService->setCommentUser($userId, $commentId);
+
+        return $isOk;
+    }
+
+
+    /**
+     * Get comment of given user id.
+     */
+    public function getCommentUser(string $commentId): array
+    {
+        $commentUsers = [];
+
+        $dataBaseService = new DataBaseService();
+
+        // Get relation users and annonces :
+        $commentsUserDTO = $dataBaseService->getCommentUser($commentId);
+        if (!empty($commentsUserDTO)) {
+            foreach ($commentsUserDTO as $commentsUsersDTO) {
+                $comments = new Comment();
+                $comments->setId($commentsUsersDTO['id']);
+                $comments->setFirstname($commentsUsersDTO['firstname']);
+                $comments->setTitre($commentsUsersDTO['titre']);
+                $comments->setCommentaire($commentsUsersDTO['commentaire']);
+
+                $commentUsers[] = $comments;
+            }
+        }
+
+        return $commentUsers;
+    }
+
+
 }
