@@ -10,6 +10,7 @@ class Comment
     private $firstname;
     private $titre;
     private $commentaire;
+    private $users;
     
 
     public function getId(): string
@@ -50,6 +51,18 @@ class Comment
     public function setCommentaire($commentaire): void
     {
         $this->commentaire = $commentaire;
+    }
+
+    public function getUser(): ?array
+    {
+        return $this->users;
+    }
+
+    public function setUser(array $users)
+    {
+        $this->users = $users;
+
+        return $this;
     }
 
     

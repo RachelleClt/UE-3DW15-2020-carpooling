@@ -12,6 +12,7 @@ class Annonce
     private $jour;
     private $depart;
     private $arrive;
+    private $users;
 
     public function getId(): string
     {
@@ -72,4 +73,17 @@ class Annonce
     {
         $this->arrive = $arrive;
     }
+
+    public function getUser(): ?array
+    {
+        return $this->users;
+    }
+
+    public function setUser(array $users)
+    {
+        $this->users = $users;
+
+        return $this;
+    }
 }
+

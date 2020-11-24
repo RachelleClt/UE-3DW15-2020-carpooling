@@ -13,6 +13,7 @@ use DateTime;
     private $datereservation;
     private $lieu_depart;
     private $lieu_arrivee;
+    private $users;
 
     public function getId(): string
     {
@@ -84,6 +85,18 @@ use DateTime;
     {
         $this->datereservation = $datereservation;
     }
+
+        public function getUser(): ?array
+        {
+            return $this->users;
+        }
+
+        public function setUser(array $users)
+        {
+            $this->users = $users;
+
+            return $this;
+        }
 
 }
 
